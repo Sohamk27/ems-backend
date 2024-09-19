@@ -20,9 +20,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
         Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
 
-        Employee savedemployee = employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
 
-        return EmployeeMapper.mapToEmployeeDto(savedemployee);
+        return EmployeeMapper.mapToEmployeeDto(savedEmployee);
     }
 
     @Override
@@ -38,5 +38,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         allEmployees = employeeRepository.findAll();
         return allEmployees.stream().map((employee) -> EmployeeMapper.mapToEmployeeDto(employee))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeDto updatedEmployee) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException("Employee with given ID not found" + employeeId));
+        employee.setFirstName(updatedEmployee.getFirstName());
+        employee.setLastName(updatedEmployee.getLastName());
+        employee.setEmail(updatedEmployee.getEmail());
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        return EmployeeMapper.mapToEmployeeDto(savedEmployee);
+    }
+
+    @Override
+    public void deleteEmployeeById(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException("Employee with given ID not found" + employeeId));
+        employeeRepository.deleteById(employeeId);
     }
 }
